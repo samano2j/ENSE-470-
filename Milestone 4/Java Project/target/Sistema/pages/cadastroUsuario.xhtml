@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado." paginator="true" paginatorPosition="bottom"
+				value="#{usuarioBean.usuarios}" var="usuario"  paginatorAlwaysVisible="false" styleClass="geral">
+				<f:facet name="header">
+					<p:outputLabel value="Cadastro de Usuário" styleClass="tituloTabela" />
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();" style="margin-right: 10%"
+						actionListener="#{usuarioBean.novo}" update=":formCadastro:painel">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Nickname" width="50" sortBy="#{usuario.nickname}" style="text-align:left">
+					<h:outputText value="#{usuario.nickname}" />
+				</p:column>
+
+				<p:column headerText="Nome" width="100" style="text-align:left" sortBy="#{usuario.nome}" >
+					<h:outputText value="#{usuario.nome}" />
+				</p:column>
+
+				<p:column headerText="Tipo" width="20" style="text-align:left">
+					<h:outputText value="#{usuario.tipoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Ativo" width="20" style="text-align:center">
+					<h:outputText value="#{usuario.ativoFormatado}" />
+				</p:column>
+				
+				<p:column headerText="Em Uso" width="20" style="text-align:center">
+					<h:outputText value="#{usuario.emUsoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Opções" width="15" style="text-align:center">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{usuarioBean.excluir}"
+						update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"
+							message="Deseja excluir o usuario?" icon="ui-icon-alert" />
+						<f:attribute name="usuarioSelecionado" value="#{usuario}" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{usuarioBean.editar}"
+						update=":mensagem :formCadastro:painel"
+						oncomplete="PF('dialogo').show();">
+						<f:attribute name="usuarioSelecionado" value="#{usuario}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Usuario - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false"
+			closeOnEscape="true">
+			<h:form id="formCadastro">
+
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel for="nick" value="Nickname" />
+					<p:inputText id="nick" size="30" maxlength="20"
+						value="#{usuarioBean.usuario.nickname}" required="true"
+						requiredMessage="O campo NICKNAME é obrigatório." />
+
+					<p:outputLabel for="nome" value="Nome" />
+					<p:inputText id="nome" size="30" maxlength="80"
+						value="#{usuarioBean.usuario.nome}" required="true"
+						requiredMessage="O campo NOME é obrigatório." />
+
+					<p:outputLabel for="senha" value="Senha" />
+					<p:password id="senha" size="30" maxlength="32"
+						value="#{usuarioBean.usuario.senha_temp}" required="true"
+						requiredMessage="O campo SENHA é obrigatório." />
+
+					<p:outputLabel for="tipo" value="Tipo" />
+					<p:selectOneRadio id="tipo" value="#{usuarioBean.usuario.tipo}"
+						required="true" requiredMessage="O campo TIPO é obrigatório.">
+						<f:selectItem itemValue="A" itemLabel="Admin" />
+						<f:selectItem itemValue="B" itemLabel="Operador" />
+						<f:selectItem itemValue="C" itemLabel="Cliente" />
+					</p:selectOneRadio>
+
+					<p:outputLabel value="Ativo" />
+					<p:selectBooleanCheckbox value="#{usuarioBean.usuario.ativo}" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{usuarioBean.salvar}" oncomplete="PF('dialogo').hide();"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+		<h:form id="formParametros"
+			style="display: inline-block;padding-left: 25px;padding-top:20px;font-size: 1.2em;">
+			<p:panel id="content">
+				<h:panelGrid columns="1" cellpadding="7">
+					<p:outputLabel value="Parâmetros"
+						style="margin-top:10px;margin-bottom:10px;font-size: 1.2em;font-weight: bold" />
+					<p:selectOneMenu id="parametros" filter="true" required="true"
+						value="#{juntaBean.parametro}"
+						converter="omnifaces.SelectItemsConverter"
+						requiredMessage="O campo PARÂMETRO é obrigatório.">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um Parâmetro" />
+						<f:selectItems value="#{juntaBean.parametros}" var="parametro"
+							itemValue="#{parametro}" itemLabel="#{parametro.nomeParametro}" />
+						<p:ajax listener="#{juntaBean.alterar()}" update="formParametros" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" cellpadding="7">
+					<p:outputLabel for="raiz" value="Raiz" />
+					<p:inputText id="raiz" size="30"
+						value="#{juntaBean.parametro.diretorio}" required="true"
+						requiredMessage="O campo RAIZ é obrigatório.">
+						<p:ajax event="change" listener="#{juntaBean.atualizaPath()}" />
+					</p:inputText>
+					<p:outputLabel value="Complemento" />
+					<p:inputText size="30" value="#{juntaBean.parametro.complemento}">
+						<p:ajax event="change" listener="#{juntaBean.atualizaPath()}" />
+					</p:inputText>
+					<p:outputLabel value="Extensão" />
+					<p:inputText size="30" value="#{juntaBean.parametro.extensao}">
+						<p:ajax event="change" listener="#{juntaBean.atualizaPath()}" />
+					</p:inputText>
+					<p:outputLabel value="Prefixo" />
+					<p:inputText size="30" value="#{juntaBean.parametro.prefixo}">
+						<p:ajax event="change" listener="#{juntaBean.atualizaPath()}" />
+					</p:inputText>
+					<p:outputLabel value="Sufixo" />
+					<p:inputText size="30" value="#{juntaBean.sufixo}"
+						required="true" requiredMessage="O campo SUFIXO é obrigatório.">
+						<p:ajax event="change" listener="#{juntaBean.atualizaPath()}" />
+					</p:inputText>
+					<p:outputLabel value="Arquivos começando com" />
+					<p:inputText size="30" value="#{juntaBean.parametro.filtro}" />
+				</h:panelGrid>
+				<h:panelGrid columns="6" cellpadding="5" style="margin-bottom: 10px">
+					<p:selectBooleanCheckbox value="#{juntaBean.parametro.incluirNome}"
+						disabled="#{!juntaBean.ehTexto()}" />
+					<p:outputLabel value="Incluir nome do Arquivo" />
+					<p:outputLabel value="Header" style="margin-left:12px" />
+					<p:inputText size="2" value="#{juntaBean.parametro.header}"
+						disabled="#{!juntaBean.ehTexto()}" />
+					<p:outputLabel value="Footer" />
+					<p:inputText size="2" value="#{juntaBean.parametro.footer}"
+						disabled="#{!juntaBean.ehTexto()}" />
+
+				</h:panelGrid>
+				<p:outputLabel value="#{juntaBean.buscaNomeCompleto()}"
+					rendered="#{juntaBean.completo}"
+					style="font-weight:bold;font-siz: 1.1em" />
+				<p:commandButton value="Juntar" actionListener="#{juntaBean.juntar}" id="longOperation"
+					style="margin-left:35%;margin-top:15px" update="mensagem" />
+			</p:panel>
+			<p:blockUI block="content" trigger="longOperation">
+				<p>Processando</p>
+				<p:graphicImage value="/resources/images/Ajax-loader.gif" />
+			</p:blockUI>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+
+		<!-- Configuração da conexão com o banco MySQL -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<!-- <property name="connection.url">jdbc:mysql://192.168.1.1:3306/erp</property> -->
+		<property name="connection.url">jdbc:mysql://localhost/erp</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">suporte99</property>
+
+		<property name="connection.pool_size">3</property>
+
+		<!-- Gerenciamento do Contexto das Sessões -->
+		<property name="current_session_context_class">thread</property>
+
+		<!-- Cache de Segundo Nível -->
+		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+		<!-- Mostra as SQLs Geradas -->
+		<property name="show_sql">true</property>
+
+		<!-- Cria as tabelas do banco de dados -->
+		<property name="hbm2ddl.auto">validate</property>
+
+		<!-- Mapeamento das entidades -->
+		<mapping class="br.com.inteltec.sistema.domain.Cidade" />
+		<mapping class="br.com.inteltec.sistema.domain.Cliente" />
+		<mapping class="br.com.inteltec.sistema.domain.CondicaoPgto" />
+		<mapping class="br.com.inteltec.sistema.domain.Estado" />
+		<mapping class="br.com.inteltec.sistema.domain.Fatura" />
+		<mapping class="br.com.inteltec.sistema.domain.ParametrosJunta" />
+		<mapping class="br.com.inteltec.sistema.domain.ProdCliente" />
+		<mapping class="br.com.inteltec.sistema.domain.Item" />
+		<mapping class="br.com.inteltec.sistema.domain.OrdemDeServico" />
+		<mapping class="br.com.inteltec.sistema.domain.Produto" />
+		<mapping class="br.com.inteltec.sistema.domain.Usuario" />
+	</session-factory>
+
+</hibernate-configuration>

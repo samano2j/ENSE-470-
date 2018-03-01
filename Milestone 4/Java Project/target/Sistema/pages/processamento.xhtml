@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+		<h:form id="formODS">
+			<p:growl id="msgs" showDetail="true" />
+			
+			<p:dataTable id="tabela" emptyMessage="Não há nada para ser processado." value="#{processamentoBean.listaODS}" var="ods" 
+				 widgetVar="processamento" paginator="true" paginatorPosition="bottom" 
+				 paginatorAlwaysVisible="false" styleClass="geral" >
+								
+				<p:column headerText="OS Nº" width="10%" style="text-align:center;">
+					<h:outputText value="#{ods.codigo}" />
+				</p:column>
+
+				<p:column headerText="Entrada" sortBy="#{ods.dataEntrada}" width="15%" style="text-align:center">
+					<h:outputText value="#{ods.dataEntrada}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>														
+				</p:column>
+
+				<p:column headerText="Cliente" width="20%" style="text-align:left">
+					<h:outputText value="#{ods.clienteID.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Observações" style="text-align:left" width="35%">
+					<h:outputText value="#{ods.observacao}" />
+				</p:column>
+
+				<p:column headerText="Processar" width="20%" style="text-align:center">
+					<p:commandButton value="Processar" actionListener="#{processamentoBean.processar}"
+									 update=":formEdit" oncomplete="PF('processar').show();" style="font-size: 90%">
+						<f:attribute name="selectedODS" value="#{ods}"/>
+						<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton> 
+				</p:column>
+					
+			</p:dataTable>
+		</h:form>
+		
+		<p:dialog header="Processar - Ordem de Serviço" widgetVar="processar" draggable="false" resizable="false" 
+				 modal="true" closable="false" closeOnEscape="true" width="80%" position="270,70" >
+			<h:form id="formEdit" style="font-size: 80%;">
+				<h:panelGrid columns="4" cellpadding="10" >
+					<p:outputLabel value="Ordem de Serviço Nº #{processamentoBean.selectedODS.codigo}"/>
+					
+					<p:outputLabel value="Cliente #{processamentoBean.selectedODS.clienteID.nomeFantasia}"/>
+										
+					<p:outputLabel value="Data de Entrada #{processamentoBean.selectedODS.dataEntrada}" />
+									
+					<p:outputLabel value="Observação #{processamentoBean.selectedODS.observacao}"/>
+				</h:panelGrid>
+								
+				<p:dataTable id="editTable" var="item" value="#{processamentoBean.listaItens}" rows="10" paginator="true" 
+							 emptyMessage="Clicem em '+ Item' para adicionar itens." editable="true" editMode="cell"
+							 paginatorPosition="bottom" paginatorAlwaysVisible="false">	 
+					<f:facet name="header">	
+						<p:commandButton value="+ Item" actionListener="#{processamentoBean.maisItem()}" update=":formEdit:editTable :mensagem"/>
+						<p:commandButton value="- Item" actionListener="#{processamentoBean.menosItem()}" update=":formEdit:editTable :mensagem"/>	
+					</f:facet>	
+					<p:column headerText="Item" width="10" style="text-align:center" >
+						<h:outputText value="#{item.itemFormatado}" />
+					</p:column>	
+			 
+					<p:column headerText="Produto" width="20" style="text-align:center">
+						<h:selectOneMenu id="produtoMenu" value="#{item.relacaoID}" converter="omnifaces.SelectItemsConverter">
+					      <f:selectItems value="#{processamentoBean.relacoes}" var="relacao" 
+					      	itemLabel="#{relacao.mascara}" itemValue="#{relacao}" />
+					  </h:selectOneMenu>	
+					</p:column>	
+					
+					<p:column headerText="Quantidade" width="10" style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output"><h:outputText value="#{item.quantidade}" /></f:facet>
+							<f:facet name="input"><p:inputText value="#{item.quantidade}" style="width:30%" maxlength="6"/></f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Multiplicador" width="10" style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output"><h:outputText value="#{item.multiplicador}" /></f:facet>
+							<f:facet name="input"><p:inputText value="#{item.multiplicador}" style="width:30%" maxlength="3"/></f:facet>
+						</p:cellEditor>
+					</p:column>
+										
+					<f:facet name="footer">	
+						<p:commandButton value="Salvar" actionListener="#{processamentoBean.salvar()}" 
+										 oncomplete="PF('processar').hide();" update=":formODS:tabela :mensagem"/>
+						<p:commandButton value="Fechar" oncomplete="PF('processar').hide();" update=":formODS:tabela :mensagem">
+							<p:confirm header="Confirmação" icon="ui-icon-alert" message="Deseja sair sem salvar?"/>
+						</p:commandButton>
+					</f:facet>																															
+	      </p:dataTable>
+	      
+	      <p:confirmDialog global="true" >				
+					<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" style="float:right" />
+					<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" style="float:right"/>
+				</p:confirmDialog>
+	  	</h:form>
+		</p:dialog>		
+	</ui:define>
+</ui:composition>

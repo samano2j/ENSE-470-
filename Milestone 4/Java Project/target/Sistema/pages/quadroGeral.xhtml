@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" styleClass="geral"
+				emptyMessage="Nenhum registro encontrado." rowExpandMode="single"
+				rowKey="#{ods.codigo}" value="#{quadroBean.listaODS}" var="ods"
+				widgetVar="quadroGeral" paginator="true" paginatorPosition="bottom"
+				paginatorAlwaysVisible="false">
+
+				<p:ajax event="rowToggle" listener="#{quadroBean.onRowToggle}" />
+				<f:facet name="header">
+				
+					<p:outputLabel value="Quadro Geral" styleClass="tituloTabela" />
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+						actionListener="#{quadroBean.novo}" update=":formCadastro">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+
+					<p:selectBooleanButton onLabel="Exibir Pendentes"
+						offLabel="Exibir Todos" value="#{quadroBean.exibirTodos}"
+						style="float:right">
+						<p:ajax listener="#{quadroBean.escolheLista}" update="formListagem"/>
+					</p:selectBooleanButton>
+
+				</f:facet>
+
+				<p:column style="text-align:center;width:3.5%">
+					<p:rowToggler />
+				</p:column>
+
+				<p:column headerText="OS" sortBy="#{ods.codigo}"
+					style="text-align:center;width:7%">
+					<h:outputText value="#{ods.codigo}" />
+				</p:column>
+
+				<p:column headerText="Entrada" sortBy="#{ods.dataEntrada}"
+					style="text-align:center;width:8%">
+					<h:outputText value="#{ods.dataEntrada}" />
+				</p:column>
+
+				<p:column headerText="Cliente" sortBy="#{ods.clienteID.nomeFantasia}"
+					style="text-align:left;width:20%">
+					<h:outputText value="#{ods.clienteID.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Produto" style="text-align:left;width:14.5%">
+					<h:outputText value="#{ods.produtoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Qtde" style="text-align:right;width:5%">
+					<h:outputText value="#{ods.quantidadeFormatada}" />
+				</p:column>
+
+				<p:column headerText="Impr." style="text-align:center;width:7%">
+					<h:outputText value="#{ods.impressoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Env." style="text-align:center;width:7.5%">
+					<h:outputText value="#{ods.envelopadoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Gramp." style="text-align:center;width:7.5%">
+					<h:outputText value="#{ods.grampeadoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Observações"
+					style="text-align:left;width:#{autenticacaoBean.largura()}">
+					<h:outputText value="#{ods.observacao}" />
+				</p:column>
+
+				<p:column headerText="Edit" width="5%" style="text-align:center"
+					rendered="#{autenticacaoBean.temPermissoes()}">
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{quadroBean.editar}"
+						disabled="#{ods.cancelada || ods.finalizado}"
+						update=":mensagem :formEdit" oncomplete="PF('edit').show();"
+						style="font-size: 80%">
+						<f:attribute name="selectedODS" value="#{ods}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+
+				<p:rowExpansion styleClass="rowExpansion">
+					<p:dataTable id="expansion" var="item" styleClass="expandedGeral"
+						value="#{quadroBean.listaItens}"
+						emptyMessage="Esta ordem de serviço ainda não foi processada.">
+
+						<p:column style="text-align:left ; width: 20%">
+							<h:outputText value="#{item.itemFormatado}" />
+						</p:column>
+
+						<p:column style="text-align:left ; width: 14.5%">
+							<h:outputText value="#{item.relacaoID.mascara}" />
+						</p:column>
+
+						<p:column style="text-align:right ; width: 5%">
+							<h:outputText value="#{item.quantidadeFormatada}" />
+						</p:column>
+
+						<p:column style="text-align:center ; width: 7%">
+							<h:outputText value="#{item.impressoFormatado}" />
+						</p:column>
+
+						<p:column style="text-align:center ; width: 7.5%">
+							<h:outputText value="#{item.envelopadoFormatado}" />
+						</p:column>
+
+						<p:column style="text-align:center ; width: 7.5%">
+							<h:outputText value="#{item.grampeadoFormatado}" />
+						</p:column>
+						<f:facet name="footer">
+							<h:form></h:form>
+						</f:facet>
+					</p:dataTable>
+				</p:rowExpansion>
+			</p:dataTable>
+
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Inclusão - Ordem de Serviço" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false"
+			closeOnEscape="true">
+			<h:form id="formCadastro">
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel for="cliente" value="Cliente" />
+					<p:selectOneMenu id="cliente" filter="true" required="true"
+						value="#{quadroBean.ods.clienteID}"
+						converter="omnifaces.SelectItemsConverter"
+						requiredMessage="O campo CLIENTE é obrigatório.">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um Cliente" />
+						<f:selectItems value="#{quadroBean.clientes}" var="cliente"
+							itemValue="#{cliente}" itemLabel="#{cliente.nomeFantasia}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="dataInclusao" value="Data Inclusão" />
+					<p:calendar id="dataInclusao" value="#{quadroBean.calendar}"
+						required="true" locale="pt_BR"
+						requiredMessage="O campo DATA DE INCLUSÃO é obrigatório."
+						size="10" disabledWeekends="true" />
+
+					<p:outputLabel for="observacao" value="Observação" />
+					<p:inputText id="observacao" size="30" maxlength="40"
+						value="#{quadroBean.ods.observacao}" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" styleClass="centered">
+					<p:commandButton value="Salvar"
+						actionListener="#{quadroBean.salvar}"
+						update="mensagem :formListagem:tabela"
+						oncomplete="PF('dialogo').hide()" />
+					<p:commandButton value="Fechar"
+						oncomplete="PF('dialogo').hide()"/>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Editar - Ordem de Serviço" widgetVar="edit"
+			draggable="false" resizable="false" modal="true" closable="false"
+			closeOnEscape="true" width="80%" position="270,70">
+			<h:form id="formEdit" style="font-size: 80%">
+				<h:panelGrid columns="5" cellpadding="10">
+					<p:outputLabel
+						value="Ordem de Serviço Nº #{quadroBean.selectedODS.codigo}" />
+
+					<p:outputLabel
+						value="Cliente #{quadroBean.selectedODS.clienteID.nomeFantasia}" />
+
+					<p:outputLabel
+						value="Data de Entrada #{quadroBean.selectedODS.dataEntrada}" />
+
+					<p:outputLabel value="Observação" />
+					<p:inputText value="#{quadroBean.selectedODS.observacao}"
+						maxlength="50" size="30" />
+				</h:panelGrid>
+
+				<p:dataTable id="editTable" var="item"
+					value="#{quadroBean.listaItens}" rows="10" paginator="true"
+					emptyMessage="Não há itens nessa ODS." editable="true"
+					editMode="cell" paginatorPosition="bottom"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+						<p:commandButton value="+ Item"
+							actionListener="#{quadroBean.maisItem}"
+							update=":formEdit:editTable :mensagem" />
+						<p:commandButton value="- Item"
+							actionListener="#{quadroBean.menosItem}"
+							update=":formEdit:editTable :mensagem" />
+					</f:facet>
+					<p:column headerText="Item" width="10" style="text-align:center">
+						<h:outputText value="#{item.itemFormatado}" />
+					</p:column>
+
+					<p:column headerText="Produto" width="20" style="text-align:center">
+						<h:selectOneMenu id="produtoMenu" value="#{item.relacaoID}"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItems value="#{quadroBean.relacoes}" var="relacao"
+								itemLabel="#{relacao.mascara}" itemValue="#{relacao}" />
+							<f:attribute name="itemSelecionado" value="#{item}" />
+							<p:ajax update="editTable" listener="#{quadroBean.mudaProduto}" />
+						</h:selectOneMenu>
+					</p:column>
+
+					<p:column headerText="Quantidade" width="10"
+						style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.quantidade}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{item.quantidade}" style="width:30%"
+									maxlength="6" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Multiplicador" width="10"
+						style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.multiplicador}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{item.multiplicador}" style="width:30%"
+									maxlength="3" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Impresso" width="10"
+						style="text-align:center">
+						<p:selectBooleanButton onLabel="Sim" offLabel="Não"
+							value="#{item.impresso}"
+							disabled="#{!item.relacaoID.produtoID.impresso}" tabindex="0">
+							<f:attribute name="itemSelecionado" value="#{item}" />
+							<p:ajax listener="#{quadroBean.checkImpresso}" update="editTable" />
+						</p:selectBooleanButton>
+					</p:column>
+
+					<p:column headerText="Envelopado" width="10"
+						style="text-align:center">
+						<p:selectBooleanButton onLabel="Sim" offLabel="Não"
+							value="#{item.envelopado}"
+							disabled="#{!item.relacaoID.produtoID.envelopado or (!item.impresso and item.relacaoID.produtoID.impresso)}">
+							<f:attribute name="itemSelecionado" value="#{item}" />
+							<p:ajax listener="#{quadroBean.check}" update="editTable" />
+						</p:selectBooleanButton>
+					</p:column>
+
+					<p:column headerText="Grampeado" width="10"
+						style="text-align:center">
+						<p:selectBooleanButton onLabel="Sim" offLabel="Não"
+							value="#{item.grampeado}"
+							disabled="#{!item.relacaoID.produtoID.grampeado or (!item.impresso and item.relacaoID.produtoID.impresso)}">
+							<f:attribute name="itemSelecionado" value="#{item}" />
+							<p:ajax listener="#{quadroBean.check}" update="editTable" />
+						</p:selectBooleanButton>
+					</p:column>
+
+					<p:column headerText="Status" width="10" style="text-align:center">
+						<p:selectBooleanButton onLabel="Cancelado" offLabel="Ativo"
+							value="#{item.cancelado}" disabled="#{item.cancelado}">
+							<f:attribute name="itemSelecionado" value="#{item}" />
+							<p:ajax listener="#{quadroBean.check}" update="editTable" />
+						</p:selectBooleanButton>
+					</p:column>
+
+					<f:facet name="footer">
+						<p:commandButton value="Salvar" oncomplete="#{quadroBean.salvou} ? PF('edit').hide() : "
+							actionListener="#{quadroBean.salvarEdit}" />
+
+						<p:commandButton value="Cancelar Ordem de Serviço"
+							actionListener="#{quadroBean.cancelarODS}"
+							action="#{quadroBean.action}">
+							<p:confirm header="Confirmação" icon="ui-icon-alert"
+								message="Esta ação não pode ser desfeita. Tem certeza que deseja cancelar esta Ordem de Serviço?" />
+						</p:commandButton>
+						<p:commandButton value="Fechar" oncomplete="PF('edit').hide()"/>
+					</f:facet>
+				</p:dataTable>
+
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						style="float:right" oncomplete="PF('edit').hide()" update="mensagem"/>
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+						style="float:right" />
+				</p:confirmDialog>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado." paginator="true" paginatorPosition="bottom" rows="15"
+							 value="#{condPgtoBean.condicoesPgto}" var="condPgto" paginatorAlwaysVisible="false" styleClass="geral">
+					<f:facet name="header">
+						<p:outputLabel value="Cadastro de Condições de Pagamento" styleClass="tituloTabela" />
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();" style="margin-right: 25%"
+											actionListener="#{condPgtoBean.novo}" update=":formCadastro:painel">
+							<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Condição Pgto" width="100"
+						sortBy="#{condPgto.descricaoPgto}" style="text-align:left">
+						<h:outputText value="#{condPgto.descricaoPgto}" />
+					</p:column>
+
+					<p:column headerText="Tipo Venc." width="30" style="text-align:left">
+						<h:outputText value="#{condPgto.tipoVencFormatado}" />
+					</p:column>
+
+					<p:column headerText="Número de dias" width="40" style="text-align:right">
+						<h:outputText value="#{condPgto.numDias}" />
+					</p:column>
+
+					<p:column headerText="Observações" width="100" style="text-align:çeft">
+						<h:outputText value="#{condPgto.observacoes}" />
+					</p:column>
+
+					<p:column headerText="Opções" width="15" style="text-align:center">
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{condPgtoBean.excluir}"
+							update=":mensagem :formListagem:tabela">
+							<p:confirm header="Confirmação"
+								message="Deseja excluir essa condição de pagamento?"
+								icon="ui-icon-alert" />
+							<f:attribute name="condPgtoSelecionado" value="#{condPgto}" />
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-pencil"
+							actionListener="#{condPgtoBean.editar}"
+							update=":mensagem :formCadastro:painel"
+							oncomplete="PF('dialogo').show();">
+							<f:attribute name="condPgtoSelecionado" value="#{condPgto}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog global="true" style="text-align:center">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Condição de Pgto - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false" closeOnEscape="true">
+			<h:form id="formCadastro">
+
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel for="condpgto" value="Condição Pgto" />
+					<p:inputText id="condpgto" size="30" maxlength="20"
+						value="#{condPgtoBean.condPgto.descricaoPgto}" required="true"
+						requiredMessage="O campo CONDIÇÃO DE PGTO é obrigatório" />
+
+					<p:outputLabel for="tipo" value="Tipo Venc." />
+					<p:selectOneRadio id="tipo"
+						value="#{condPgtoBean.condPgto.tipoVenc}" required="true"
+						requiredMessage="O campo TIPO VENC. é obrigatório.">
+						<f:selectItem itemValue="C" itemLabel="Dias Corrido" />
+						<f:selectItem itemValue="F" itemLabel="Dia Fixo" />
+					</p:selectOneRadio>
+
+					<p:outputLabel for="dias" value="Numéro de dias" />
+					<p:inputText id="dias" size="5" maxlength="3"
+						value="#{condPgtoBean.condPgto.numDias}" required="true"
+						requiredMessage="O campo NÚMERO DE DIAS é obrigatório" />
+
+					<p:outputLabel value="Observação" />
+					<p:inputText size="30" maxlength="35"
+						value="#{condPgtoBean.condPgto.observacoes}" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar" actionListener="#{condPgtoBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" oncomplete="PF('dialogo').hide();" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

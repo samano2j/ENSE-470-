@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				styleClass="geral" var="relacao" widgetVar="prodClienteTable"
+				paginator="true" value="#{prodClienteBean.relacoes}" rows="15"
+				paginatorAlwaysVisible="false" paginatorPosition="bottom">
+				<f:facet name="header">
+					<p:outputLabel value="Cadastro de Relações Produtos / Clientes"
+						styleClass="tituloTabela" />
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+						actionListener="#{prodClienteBean.novo}" style="margin-right: 20%"
+						update=":formCadastro:painel">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Cliente" width="75"
+					sortBy="#{relacao.clienteID.nomeFantasia}"
+					filterBy="#{relacao.clienteID.nomeFantasia}">
+					<h:outputText value="#{relacao.clienteID.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Máscara" width="75"
+					sortBy="#{relacao.mascara}" style="text-align:left">
+					<h:outputText value="#{relacao.mascara}" />
+				</p:column>
+
+				<p:column headerText="Produto" width="75"
+					sortBy="#{relacao.produtoID.nomeProduto}" style="text-align:left">
+					<h:outputText value="#{relacao.produtoID.nomeProduto}" />
+				</p:column>
+
+				<p:column headerText="Entrega" width="75" style="text-align:left">
+					<h:outputText value="#{relacao.entrega}" />
+				</p:column>
+
+				<p:column headerText="Preço Unitário" width="30"
+					style="text-align:center">
+					<h:outputText value="#{relacao.precoUnitario}">
+						<f:convertNumber locale="pt_BR" minFractionDigits="2" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Data Reajuste" width="30"
+					style="text-align:center">
+					<h:outputText value="#{relacao.dataReajuste}"/>
+				</p:column>
+
+				<p:column headerText="Opções" width="20" style="text-align:center">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{prodClienteBean.excluir}"
+						update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"
+							message="Deseja excluir a relação?" icon="ui-icon-alert" />
+						<f:attribute name="relacaoSelecionada" value="#{relacao}" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{prodClienteBean.editar}"
+						update=":mensagem :formCadastro:painel"
+						oncomplete="PF('dialogo').show();">
+						<f:attribute name="relacaoSelecionada" value="#{relacao}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Criar relação produto/cliente" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false"
+			closeOnEscape="true">
+			<h:form id="formCadastro">
+
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel for="cliente" value="Cliente" />
+					<p:selectOneMenu id="cliente" filter="true" required="true"
+						value="#{prodClienteBean.relacao.clienteID}"
+						converter="omnifaces.SelectItemsConverter"
+						requiredMessage="O campo CLIENTE é obrigatório.">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione o Cliente" />
+						<f:selectItems value="#{prodClienteBean.clientes}" var="cliente"
+							itemValue="#{cliente}" itemLabel="#{cliente.nomeFantasia}" />
+					</p:selectOneMenu>
+					<p:outputLabel for="mascara" value="Máscara" />
+					<p:inputText id="mascara" size="30" maxlength="40" required="true"
+						value="#{prodClienteBean.relacao.mascara}"
+						requiredMessage="O campo MÁSCARA é obrigatório." />
+
+					<p:outputLabel for="produto" value="Produto" />
+					<p:selectOneMenu id="produto" filter="true" required="true"
+						value="#{prodClienteBean.relacao.produtoID}"
+						converter="omnifaces.SelectItemsConverter"
+						requiredMessage="O campo PRODUTO é obrigatório.">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione o produto" />
+						<f:selectItems value="#{prodClienteBean.produtos}" var="produto"
+							itemValue="#{produto}" itemLabel="#{produto.nomeProduto}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="entrega" value="Entrega" />
+					<p:inputText id="entrega" size="30" maxlength="60" required="true"
+						value="#{prodClienteBean.relacao.entrega}"
+						requiredMessage="O campo ENTREGA é obrigatório." />
+
+					<p:outputLabel for="uom" value="UOM" />
+					<p:selectOneRadio id="uom" value="#{prodClienteBean.relacao.uom}"
+						required="true" requiredMessage="O campo UOM é obrigatório.">
+						<f:selectItem itemValue="UN" itemLabel="Unitário" />
+						<f:selectItem itemValue="MIL" itemLabel="Milheiro" />
+					</p:selectOneRadio>
+
+					<p:outputLabel for="preco" value="Preço" />
+					<p:inputText id="preco" size="20" maxlength="10" required="true"
+						value="#{prodClienteBean.relacao.precoUnitario}"
+						requiredMessage="O campo PREÇO é obrigatório."
+						converterMessage="Valor inválido no campo PREÇO."
+						validatorMessage="Informe um valor entre 0,01 e 9999,99 para o campo PREÇO.">
+						<f:validateDoubleRange maximum="9999.999" minimum="0.001" />
+						<f:convertNumber locale="pt_BR" minFractionDigits="2" />
+					</p:inputText>
+
+					<p:outputLabel for="dataReajuste" value="Data de reajuste:" />
+					<p:calendar id="dataReajuste"
+						value="#{prodClienteBean.calendar}" required="true"
+						requiredMessage="O campo DATA DE REAJUSTE é obrigatório."
+						size="10" locale="pt_BR" />
+
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar" oncomplete="PF('dialogo').hide();"
+						actionListener="#{prodClienteBean.salvar()}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

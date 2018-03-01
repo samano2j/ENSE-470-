@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</f:facet>
+
+	<title>Inteltec</title>
+	
+	<h:outputScript target="body" library="primefaces" name="jquery/jquery.js" />
+	<h:outputScript target="body" library="js" name="scripts.js" />
+</h:head>
+
+<h:body onload="restauraMenu()">
+	<h:outputStylesheet library="styles" name="custom.css" />
+	<h:outputStylesheet library="styles" name="layout.css" />
+	<h:outputStylesheet library="styles" name="components.css" />
+	<p:growl id="mensagem"/>
+	
+	<header class="aw-topbar">
+
+		<div style="float: left;">
+			<span class="inteltec">Inteltec</span>
+			<a href="#" class="aw-toggle  js-toggle"><i class="fa fa-bars"></i></a>	
+		</div>
+		<div class="userDiv" onmouseenter="userHover()" onmouseleave="userHover()">
+			<a href="#" class="userMenu" >
+		        <span>#{autenticacaoBean.usuarioLogado.nickname}</span>
+		        <i class="fa fa-fw fa-user" style="margin-left: 15px"></i>		
+		    </a>
+		    <h:form>
+			    <div class="logoutDiv" style="display: none;" id="userOut">
+					<p:commandLink styleClass="userMenu" actionListener="#{autenticacaoBean.logoff()}">
+						<i class="fa fa-fw fa-arrow-circle-right"></i>					
+			    	 	<span>Sair</span>				    	 	
+			    	</p:commandLink>
+		    	</div>
+	    	</h:form>			
+		</div>	
+	</header>
+	
+	<h:form>
+		<aside class="aw-sidebar  js-sidebar">
+			<nav class="aw-menu">
+				<ul>
+					<li style="padding-top: 20px">		    
+						<a href="#" onclick="clickProd()">
+					        <i class="fa fa-fw fa-tasks" ></i>
+					        <span style="font-size: 1.3em">Produção</span>
+					        <i class="fa fa-fw fa-angle-down" style="float: right;margin-right: 5px;font-size: 1.5em"></i>						
+					    </a>
+					    <div id="menuProducao" class="menuItem">
+						    <ul style="padding-left: 0px" >
+						   	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="quadroGeral"/>
+						    		<i class="fa fa-list-alt fa-fw"></i>
+						    	 	<span>Quadro Geral</span>				    	 	
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="processamento"/>
+						    		<i class="fa fa-laptop fa-fw"></i>
+						    	 	<span>Processamento</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="impressao"/>
+						    		<i class="fa fa-print fa-fw"></i>
+						    	 	<span>Impressão</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="envelopamento"/>
+						    		<i class="fa fa-envelope-o fa-fw"></i>
+						    	 	<span>Envelopamento</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="despacho"/>
+						    		<i class="fa fa-sign-out fa-fw"></i>
+						    	 	<span>Despacho</span>
+						    	</p:commandLink>
+						    	
+						    </ul>
+					    </div>
+					</li>
+					<li>			    
+						<a href="#" onclick="clickTools()">
+					        <i class="fa fa-fw fa-cog"></i>
+					        <span style="font-size: 1.3em">Ferramentas</span>
+					    	<i class="fa fa-fw fa-angle-down" style="float: right;margin-right: 5px;font-size: 1.5em"></i>					
+					    </a>	
+					    <div id="menuFerramentas" class="menuItem">			 
+						    <ul style="padding-left: 0px">
+						    
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="agenda"/>
+						    		<i class="fa fa-newspaper-o fa-fw "></i>
+						    	 	<span>Agenda de Clientes</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="relatorio"/>
+						    		<i class="fa fa-columns fa-fw"></i>
+						    	 	<span>Relatórios</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}" 
+						    		rendered="#{autenticacaoBean.temPermissoes()}">
+						    		<f:attribute name="pagina" value="demonstrativo"/>
+						    		<i class="fa fa-align-right fa-fw"></i>
+						    	 	<span>Demonstrativo</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}"
+						    		rendered="#{autenticacaoBean.temPermissoes()}">
+						    		<f:attribute name="pagina" value="faturamento"/>
+						    		<i class="fa fa-university fa-fw"></i>
+						    	 	<span>Faturamento</span>
+						    	</p:commandLink>
+						    	
+						    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+						    		<f:attribute name="pagina" value="junta"/>
+						    		<i class="fa fa-files-o fa-fw"></i>
+						    	 	<span>Junta Arquivo</span>
+						    	</p:commandLink>
+						    	
+						    </ul>
+					    </div>
+					</li>
+					<h:form>
+						<li>			    
+							<a href="#" onclick="clickCadastro()">
+						        <i class="fa fa-fw fa-database"></i>
+						        <span style="font-size: 1.3em">Cadastros</span>
+						        <i class="fa fa-fw fa-angle-down" style="float: right;margin-right: 5px;font-size: 1.5em"></i>					
+						    </a>
+						    
+						    <div id="menuCadastros" class="menuItem">
+							    <ul style="padding-left: 0px">						    
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+							    		<f:attribute name="pagina" value="cidade"/>
+							    		<i class="fa fa-map-marker fa-fw"></i>
+							    	 	<span>Cidade</span>
+							    	</p:commandLink>
+							    	
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+							    		<f:attribute name="pagina" value="cliente"/>
+							    		<i class="fa fa-users fa-fw"></i>
+							    	 	<span>Cliente</span>
+							    	</p:commandLink>
+							    	
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+							    		<f:attribute name="pagina" value="condicao"/>
+							    		<i class="fa fa-btc fa-fw"></i>
+							    	 	<span>Condição de Pagamento</span>
+							    	</p:commandLink>
+							    	
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+							    		<f:attribute name="pagina" value="produto"/>
+							    		<i class="fa fa-file-text fa-fw"></i>
+							    	 	<span>Produto</span>
+							    	</p:commandLink>
+							    	
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}">
+							    		<f:attribute name="pagina" value="relacao"/>
+							    		<i class="fa fa-sitemap fa-fw"></i>
+							    	 	<span>Relação Prod/Cliente</span>
+							    	</p:commandLink>
+							    	
+							    	<p:commandLink style="padding-left: 30px" actionListener="#{redirecionamentoBean.redirect}" rendered="#{autenticacaoBean.temPermissoes()}">
+							    		<f:attribute name="pagina" value="usuario"/>
+							    		<i class="fa fa-user fa-fw"></i>
+							    	 	<span>Usuário</span>
+							    	</p:commandLink> 	
+							    </ul>
+						    </div>
+						</li>
+					</h:form>
+				</ul>
+			</nav>
+		</aside>
+	</h:form>
+	<section class="aw-content  js-content" style="font-size:1.1em">
+		<ui:insert name="conteudo"/>
+	</section>
+</h:body>
+</html>

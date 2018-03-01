@@ -1,0 +1,1 @@
+<% response.sendRedirect("pages/autenticacao.xhtml"); %>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" paginatorPosition="bottom" rows="16"
+				value="#{clienteBean.clientes}" var="cliente"
+				paginatorAlwaysVisible="false" styleClass="geral">
+
+				<p:column headerText="Cliente" width="30%"
+					sortBy="#{cliente.nomeFantasia}" filterBy="#{cliente.nomeFantasia}">
+					<h:outputText value="#{cliente.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Contato" width="25%"
+					filterBy="#{cliente.contato}">
+					<h:outputText value="#{cliente.contato}" />
+				</p:column>
+
+				<p:column headerText="Telefone" width="15%"
+					style="text-align:center">
+					<h:outputText value="#{cliente.fone1}" />
+				</p:column>
+
+				<p:column headerText="E-mail" width="25%">
+					<h:outputText value="#{cliente.email}" />
+				</p:column>
+
+				<p:column headerText="Info" width="5%" style="text-align:center">
+					<p:commandButton icon="ui-icon-zoomin"
+						actionListener="#{clienteBean.visualizar}"
+						update=":mensagem :formVisualizacao"
+						oncomplete="PF('visualizacao').show();">
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+		<p:dialog header="Visualização detalhada" widgetVar="visualizacao"
+			draggable="false" resizable="false" modal="true" closeOnEscape="true"
+			position="270,70">
+			<h:form id="formVisualizacao">
+				<p:tabView>
+					<p:tab title="Informações Gerais">
+						<h:panelGrid columns="4" cellpadding="10px">
+							<p:outputLabel value="Razão Social: " />
+							<p:outputLabel value="#{clienteBean.cliente.razaoSocial}" />
+
+							<p:outputLabel value="Nome Fantasia: " />
+							<p:outputLabel value="#{clienteBean.cliente.nomeFantasia}" />
+
+							<p:outputLabel value="Pessoa J/F: " />
+							<h:outputText value="#{clienteBean.cliente.fisJurFormatado}" />
+
+							<p:outputLabel value="CNPJ/CPF: " />
+							<p:outputLabel value="#{clienteBean.cliente.cnpjcpf}" />
+
+							<p:outputLabel value="Inscrição Estadual: " />
+							<p:outputLabel value="#{clienteBean.cliente.inscestadual}" />
+
+							<p:outputLabel value="Inscrição Municipal: " />
+							<p:outputLabel value="#{clienteBean.cliente.inscmunicipal}" />
+
+							<p:outputLabel value="Contato: " />
+							<p:outputLabel value="#{clienteBean.cliente.contato}" />
+
+							<p:outputLabel value="E-mail: " />
+							<p:outputLabel value="#{clienteBean.cliente.email}" />
+
+							<p:outputLabel value="Fone: " />
+							<p:outputLabel value="#{clienteBean.cliente.fone1}" />
+
+							<p:outputLabel value="Fone: " />
+							<p:outputLabel value="#{clienteBean.cliente.fone2}" />
+
+							<p:outputLabel value="Usuário: " />
+							<p:outputLabel value="#{clienteBean.cliente.usuarioID.nickname}" />
+
+							<p:outputLabel value="Ativo" />
+							<h:outputText value="#{clienteBean.cliente.ativoFormatado}" />
+
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Endereço">
+						<h:panelGrid columns="2" cellpadding="10px">
+							<p:outputLabel value="CEP: " />
+							<p:outputLabel value="#{clienteBean.cliente.cep}" />
+
+							<p:outputLabel value="Logradouro: " />
+							<p:outputLabel value="#{clienteBean.cliente.logradouro}" />
+
+							<p:outputLabel value="Número: " />
+							<p:outputLabel value="#{clienteBean.cliente.numero}" />
+
+							<p:outputLabel value="Complemento: " />
+							<p:outputLabel value="#{clienteBean.cliente.complemento}" />
+
+							<p:outputLabel value="Bairro: " />
+							<p:outputLabel value="#{clienteBean.cliente.bairro}" />
+
+							<p:outputLabel value="Cidade: " />
+							<p:outputLabel value="#{clienteBean.cliente.cidadeID.cidade}" />
+
+							<p:outputLabel value="UF: " />
+							<p:outputLabel value="#{clienteBean.cliente.estadoID.uf}" />
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Ficha Financeira">
+						<h:panelGrid columns="4" cellpadding="10px">
+							<p:outputLabel value="E-mail NFE: " />
+							<p:outputLabel value="#{clienteBean.cliente.emailNFE}" />
+
+							<p:outputLabel value="E-mail Demonstrativo: " />
+							<p:outputLabel value="#{clienteBean.cliente.emailDemo}" />
+
+							<p:outputLabel value="Requer Nota: " />
+							<h:outputText value="#{clienteBean.cliente.notaFormatada}" />
+
+							<p:outputLabel value="Requer Boleto: " />
+							<h:outputText value="#{clienteBean.cliente.boletoFormatado}" />
+
+							<p:outputLabel value="Aprova Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.aprovaDemoFormatado}" />
+
+							<p:outputLabel value="Envia Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.enviaDemoFormatado}" />
+
+							<p:outputLabel value="Condição de Faturamento: " />
+							<h:outputText
+								value="#{clienteBean.cliente.condFaturamentoFormatado}" />
+
+							<p:outputLabel value="Número p/ Cond. de Fat. (X)" />
+							<h:outputText value="#{clienteBean.cliente.numCond}" />
+
+							<p:outputLabel value="Condição de Pgto: " />
+							<p:outputLabel
+								value="#{clienteBean.cliente.condicaoPgtoID.descricaoPgto}" />
+
+							<p:outputLabel value="Último Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.ultimoDemo}">
+								<f:convertDateTime pattern="dd/MM/yy" />
+							</h:outputText>
+						</h:panelGrid>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado." paginator="true" paginatorPosition="bottom" rows="15"
+				value="#{produtoBean.produtos}" var="produto" paginatorAlwaysVisible="false" styleClass="geral" widgetVar="prodTable">
+				<f:facet name="header">
+					<p:outputLabel value="Cadastro de Produtos" styleClass="tituloTabela" />
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();" style="margin-right: 15%"
+						actionListener="#{produtoBean.novo}" update=":formCadastro:painel">
+						<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Nome" width="50" sortBy="#{produto.nomeProduto}" filterBy="#{produto.nomeProduto}">
+					<h:outputText value="#{produto.nomeProduto}" />
+				</p:column>
+
+				<p:column headerText="Formato" width="30" filterBy="#{produto.formato}">
+		            <f:facet name="filter">
+		                <p:selectOneMenu onchange="PF('prodTable').filter()" >
+		                    <f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+							<f:selectItem itemLabel="A4" itemValue="A4" />
+							<f:selectItem itemLabel="A5" itemValue="A5" />
+							<f:selectItem itemLabel="Carnê" itemValue="Carnê" />
+							<f:selectItem itemLabel="Etiqueta" itemValue="Etiqueta" />
+		                </p:selectOneMenu>
+		            </f:facet>
+					<h:outputText value="#{produto.formato}" />
+				</p:column>
+				
+				<p:column headerText="Cor" width="30" style="text-align:left">
+					<h:outputText value="#{produto.corFormatada}"/> 
+				</p:column>
+
+				<p:column headerText="Impresso" width="30" style="text-align:center">
+					<h:outputText value="#{produto.impressoFormatado}"/> 
+				</p:column>
+
+				<p:column headerText="Envelopado" width="30" style="text-align:center">
+					<h:outputText value="#{produto.envelopadoFormatado}"/> 
+				</p:column>
+
+				<p:column headerText="Grampeado" width="30" style="text-align:center">
+					<h:outputText value="#{produto.grampeadoFormatado}"/> 
+				</p:column>
+
+				<p:column headerText="Opções" width="15" style="text-align:center">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{produtoBean.excluir}"
+						update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"
+							message="Deseja excluir o produto?" icon="ui-icon-alert" />
+						<f:attribute name="produtoSelecionado" value="#{produto}" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{produtoBean.editar}"
+						update=":mensagem :formCadastro:painel"
+						oncomplete="PF('dialogo').show();">
+						<f:attribute name="produtoSelecionado" value="#{produto}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="formListagem"/>
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Produto - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false"
+			closeOnEscape="true">
+			<h:form id="formCadastro">
+
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel for="nome" value="Nome do Produto" />
+					<p:inputText id="nome" size="30" maxlength="30"
+						value="#{produtoBean.produto.nomeProduto}" required="true"
+						requiredMessage="O campo NOME DO PRODUTO é obrigatório" />
+
+					<p:outputLabel for="formato" value="Formato" />
+					<p:selectOneRadio id="formato"
+						value="#{produtoBean.produto.formato}" required="true"
+						requiredMessage="o campo FORMATO é obrigatório">
+						<f:selectItem itemLabel="A4" itemValue="A4" />
+						<f:selectItem itemLabel="A5" itemValue="A5" />
+						<f:selectItem itemLabel="Carnê" itemValue="Carnê" />
+						<f:selectItem itemLabel="Etiqueta" itemValue="Etiqueta" />
+					</p:selectOneRadio>
+					
+					<p:outputLabel for="cor" value="Cor" />
+					<p:selectOneRadio id="cor" value="#{produtoBean.produto.cor}" required="true"
+						requiredMessage="o campo COR é obrigatório">
+						<f:selectItem itemLabel="PB" itemValue="P" />
+						<f:selectItem itemLabel="Colorido" itemValue="C" />
+					</p:selectOneRadio>
+					
+					<p:outputLabel value="Impresso" />
+					<p:selectBooleanCheckbox value="#{produtoBean.produto.impresso}" />
+
+					<p:outputLabel value="Envelopado" />
+					<p:selectBooleanCheckbox value="#{produtoBean.produto.envelopado}" />
+
+					<p:outputLabel value="Grampeado" />
+					<p:selectBooleanCheckbox value="#{produtoBean.produto.grampeado}" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar" oncomplete="PF('dialogo').hide();"
+						actionListener="#{produtoBean.salvar}" update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

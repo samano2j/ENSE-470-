@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+		<h:form id="formODS">
+
+			<div id="center">
+				<p:dataTable id="demonstrativo"
+					emptyMessage="#{demonstrativoBean.emptyMessage()}"
+					value="#{demonstrativoBean.listaItens}" var="item"
+					styleClass="geral">
+
+					<f:facet name="header">
+						<p:outputLabel value="Demonstrativo" styleClass="tituloTabela" />
+						<p:commandButton value="Gerar PDF"
+							actionListener="#{demonstrativoBean.gerar}" />
+						<p:selectOneMenu id="cliente" filter="true" required="true"
+							value="#{demonstrativoBean.selectedCliente}" style="float: right"
+							converter="omnifaces.SelectItemsConverter">
+							<p:ajax listener="#{demonstrativoBean.selecionar()}"
+								update=":mensagem :formODS" />
+							<f:selectItem itemLabel="Selecione um Cliente" />
+							<f:selectItems value="#{demonstrativoBean.listaClientes}"
+								var="cliente" itemValue="#{cliente}"
+								itemLabel="#{cliente.nomeFantasia}" />
+						</p:selectOneMenu>
+					</f:facet>
+
+					<p:column headerText="OS" groupRow="true" width="30%"
+						style="text-align: left">
+						<p:commandButton actionListener="#{demonstrativoBean.remover}"
+							icon="fa fa-times" update=":formODS:demonstrativo"
+							style="font-size: 100%">
+							<f:attribute name="selectedItem" value="#{item}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+						<h:outputText style="margin-left:20px"
+							value="OS Nº #{item.odsID.codigo} - #{item.odsID.dataEntrada}" />
+					</p:column>
+
+					<p:column headerText="Item" style="text-align:left ; width: 20%">
+						<h:outputText value="#{item.itemFormatado}" />
+					</p:column>
+
+					<p:column headerText="Produto" style="text-align:left ; width: 25%">
+						<h:outputText value="#{item.relacaoID.mascara}" />
+					</p:column>
+
+					<p:column headerText="Qtde" style="text-align:right ; width: 10%">
+						<h:outputText value="#{item.quantidadeFormatada}" />
+					</p:column>
+
+					<p:column headerText="Valor" style="text-align:right ; width: 15%">
+						<h:outputText value="#{item.valor}" />
+					</p:column>
+				</p:dataTable>
+			</div>
+			
+			<div id="right">
+				<p:outputLabel value="Clientes Sugeridos"
+					style="font-size: 1.3em;color: #4e718f;font-weight:bold;margin-left: 95px" />
+				<p:selectOneListbox id="basic" style="width: 250px;margin-left: 35px"
+					value="#{demonstrativoBean.selectedCliente}"
+					converter="omnifaces.SelectItemsConverter">
+					<f:selectItems value="#{demonstrativoBean.listaClientesSugeridos}"
+						var="cliente" itemLabel="#{cliente.nomeFantasia}"
+						itemValue="#{cliente}" />
+					<p:ajax listener="#{demonstrativoBean.selecionar()}"
+						update=":mensagem :formODS" />
+				</p:selectOneListbox>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

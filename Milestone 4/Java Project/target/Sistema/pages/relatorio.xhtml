@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				rowKey="#{ods.codigo}" styleClass="geral"
+				value="#{relatorioBean.listaODS}" var="ods"
+				widgetVar="relatorioTable" paginator="true"
+				paginatorAlwaysVisible="false" paginatorPosition="bottom">
+
+				<f:facet name="header">
+					<p:outputLabel value="Relatórios" styleClass="tituloTabela" />
+					<p:commandButton value="Print" update="formImpressao"
+						oncomplete="PF('impressao').show();" style="margin-left: -10%;">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+					<p:commandButton value="Filtro" oncomplete="PF('filtro').show();" />
+					<p:commandButton value="Limpar Filtro"
+						update="mensagem :formListagem:tabela"
+						actionListener="#{relatorioBean.limpaFiltro}" />
+				</f:facet>
+
+				<p:column headerText="OS Nº" sortBy="#{ods.codigo}"
+					style="text-align:center" width="7%">
+					<h:outputText value="#{ods.codigo}" />
+				</p:column>
+
+				<p:column headerText="Entrada" sortBy="#{ods.dataEntrada}"
+					style="text-align:center" width="8%">
+					<h:outputText value="#{ods.dataEntrada}">
+						<f:convertDateTime pattern="dd/MM/yy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Finalizado" sortBy="#{ods.dataFinalizacao}"
+					style="text-align:center" width="9%">
+					<h:outputText value="#{ods.dataFinalizacao}">
+						<f:convertDateTime pattern="dd/MM/yy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Cliente"
+					sortBy="#{ods.clienteID.nomeFantasia}" style="text-align:left"
+					width="19%">
+					<h:outputText value="#{ods.clienteID.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Produto" style="text-align:left" width="20%">
+					<h:outputText value="#{ods.produtoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Qtde" style="text-align:right" width="5%">
+					<h:outputText value="#{ods.quantidadeFormatada}" />
+				</p:column>
+
+				<p:column headerText="Impresso" style="text-align:center" width="8%">
+					<h:outputText value="#{ods.impressoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Envelopado" style="text-align:center"
+					width="8%">
+					<h:outputText value="#{ods.envelopadoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Gramp." style="text-align:center" width="5%">
+					<h:outputText value="#{ods.grampeadoFormatado}" />
+				</p:column>
+
+				<p:column headerText="Status" style="text-align:left" width="11%">
+					<h:outputText value="#{ods.status}" />
+				</p:column>
+			</p:dataTable>
+
+
+		</h:form>
+		<p:dialog header="Filtro" widgetVar="filtro" draggable="false"
+			resizable="false" modal="true" closeOnEscape="true">
+			<h:form id="formCadastro">
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Ordem de Serviço de" />
+					<p:inputText value="#{relatorioBean.odsMin}" size="7"
+						style="text-align:center" />
+					<p:outputLabel value=" até " />
+					<p:inputText value="#{relatorioBean.odsMax}" size="7"
+						style="text-align:center" />
+
+					<p:outputLabel value="Data de Entrada de" />
+					<p:calendar value="#{relatorioBean.dataSmin}" size="7"
+						locale="pt_BR" disabledWeekends="true" />
+					<p:outputLabel value=" até " />
+					<p:calendar value="#{relatorioBean.dataSmax}" size="7"
+						locale="pt_BR" disabledWeekends="true" />
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Cliente" />
+					<p:inputText value="#{relatorioBean.cliente}" size="15"
+						style="float:right" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="6">
+					<p:outputLabel value="Em Produção" />
+					<p:selectBooleanCheckbox value="#{relatorioBean.emProducao}" />
+					<p:outputLabel value="Finalizados" />
+					<p:selectBooleanCheckbox value="#{relatorioBean.finalizado}" />
+					<p:outputLabel value="Cancelados" />
+					<p:selectBooleanCheckbox value="#{relatorioBean.cancelado}" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Aplicar Filtro"
+						actionListener="#{relatorioBean.aplicaFiltro}"
+						update=":mensagem :formListagem:tabela"
+						oncomplete="PF('filtro').hide();" />
+					<p:commandButton value="Fechar" oncomplete="PF('filtro').hide();"
+						update=":formListagem:tabela" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Filtro" widgetVar="impressao" draggable="false"
+			resizable="false" modal="true" closeOnEscape="true">
+			<h:form id="formImpressao">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Nome do arquivo: " />
+					<p:inputText value="#{relatorioBean.nomeArquivo}" size="15"
+						style="float:right" />
+					<p:commandButton value="Salvar"
+						actionListener="#{relatorioBean.imprimir}" update="mensagem"
+						oncomplete="PF('impressao').hide();" />
+					<p:commandButton value="Fechar"
+						oncomplete="PF('impressao').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				value="#{clienteBean.clientes}" var="cliente" rows="15"
+				paginator="true" paginatorPosition="bottom"
+				paginatorAlwaysVisible="false">
+				<f:facet name="header">
+					<p:outputLabel value="Cadastro de Clientes"
+						styleClass="tituloTabela" />
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+						style="margin-right: 10%" actionListener="#{clienteBean.novo}"
+						update=":mensagem :formCadastro">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Cliente" width="40"
+					sortBy="#{cliente.nomeFantasia}" filterBy="#{cliente.nomeFantasia}">
+					<h:outputText value="#{cliente.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Telefone" width="20" style="text-align:center">
+					<h:outputText value="#{cliente.fone1}" />
+				</p:column>
+
+				<p:column headerText="E-mail" width="30" style="text-align:left">
+					<h:outputText value="#{cliente.email}" />
+				</p:column>
+
+				<p:column headerText="Opções" width="10" style="text-align:center">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{clienteBean.excluir}"
+						update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"
+							message="Deseja excluir o cliente?" icon="ui-icon-alert" />
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{clienteBean.editar}"
+						update=":mensagem :formCadastro"
+						oncomplete="PF('dialogo').show();">
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-zoomin"
+						actionListener="#{clienteBean.visualizar}"
+						update=":mensagem :formVisualizacao"
+						oncomplete="PF('visualizacao').show();">
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button" 
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog header="Visualização detalhada" widgetVar="visualizacao"
+			position="270,70" draggable="false" resizable="false" modal="true"
+			closeOnEscape="true">
+			<h:form id="formVisualizacao">
+				<p:tabView>
+					<p:tab title="Informações Gerais">
+						<h:panelGrid columns="4" cellpadding="10px">
+							<p:outputLabel value="Razão Social: " />
+							<p:outputLabel value="#{clienteBean.cliente.razaoSocial}" />
+
+							<p:outputLabel value="Nome Fantasia: " />
+							<p:outputLabel value="#{clienteBean.cliente.nomeFantasia}" />
+
+							<p:outputLabel value="Pessoa J/F: " />
+							<h:outputText value="#{clienteBean.cliente.fisJurFormatado}" />
+
+							<p:outputLabel value="CNPJ/CPF: " />
+							<p:outputLabel value="#{clienteBean.cliente.cnpjcpf}" />
+
+							<p:outputLabel value="Inscrição Estadual: " />
+							<p:outputLabel value="#{clienteBean.cliente.inscestadual}" />
+
+							<p:outputLabel value="Inscrição Municipal: " />
+							<p:outputLabel value="#{clienteBean.cliente.inscmunicipal}" />
+
+							<p:outputLabel value="Contato: " />
+							<p:outputLabel value="#{clienteBean.cliente.contato}" />
+
+							<p:outputLabel value="E-mail: " />
+							<p:outputLabel value="#{clienteBean.cliente.email}" />
+
+							<p:outputLabel value="Fone: " />
+							<p:outputLabel value="#{clienteBean.cliente.fone1}" />
+
+							<p:outputLabel value="Fone: " />
+							<p:outputLabel value="#{clienteBean.cliente.fone2}" />
+
+							<p:outputLabel value="Usuário: " />
+							<p:outputLabel value="#{clienteBean.cliente.usuarioID.nickname}" />
+
+							<p:outputLabel value="Ativo" />
+							<h:outputText value="#{clienteBean.cliente.ativoFormatado}" />
+
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Endereço">
+						<h:panelGrid columns="2" cellpadding="10px">
+							<p:outputLabel value="CEP: " />
+							<p:outputLabel value="#{clienteBean.cliente.cep}" />
+
+							<p:outputLabel value="Logradouro: " />
+							<p:outputLabel value="#{clienteBean.cliente.logradouro}" />
+
+							<p:outputLabel value="Número: " />
+							<p:outputLabel value="#{clienteBean.cliente.numero}" />
+
+							<p:outputLabel value="Complemento: " />
+							<p:outputLabel value="#{clienteBean.cliente.complemento}" />
+
+							<p:outputLabel value="Bairro: " />
+							<p:outputLabel value="#{clienteBean.cliente.bairro}" />
+
+							<p:outputLabel value="Cidade: " />
+							<p:outputLabel value="#{clienteBean.cliente.cidadeID.cidade}" />
+
+							<p:outputLabel value="UF: " />
+							<p:outputLabel value="#{clienteBean.cliente.estadoID.uf}" />
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Ficha Financeira">
+						<h:panelGrid columns="4" cellpadding="10px">
+							<p:outputLabel value="E-mail NFE: " />
+							<p:outputLabel value="#{clienteBean.cliente.emailNFE}" />
+
+							<p:outputLabel value="E-mail Demonstrativo: " />
+							<p:outputLabel value="#{clienteBean.cliente.emailDemo}" />
+
+							<p:outputLabel value="Requer Nota: " />
+							<h:outputText value="#{clienteBean.cliente.notaFormatada}" />
+
+							<p:outputLabel value="Requer Boleto: " />
+							<h:outputText value="#{clienteBean.cliente.boletoFormatado}" />
+
+							<p:outputLabel value="Aprova Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.aprovaDemoFormatado}" />
+
+							<p:outputLabel value="Envia Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.enviaDemoFormatado}" />
+
+							<p:outputLabel value="Condição de Faturamento: " />
+							<h:outputText value="#{clienteBean.cliente.condFaturamentoFormatado}" />
+
+							<p:outputLabel value="Número p/ Cond. de Fat. (X)" />
+							<h:outputText value="#{clienteBean.cliente.numCond}" />
+
+							<p:outputLabel value="Condição de Pgto: " />
+							<p:outputLabel value="#{clienteBean.cliente.condicaoPgtoID.descricaoPgto}" />
+
+							<p:outputLabel value="Último Demonstrativo: " />
+							<h:outputText value="#{clienteBean.cliente.ultimoDemo}">
+								<f:convertDateTime pattern="dd/MM/yy" />
+							</h:outputText>
+						</h:panelGrid>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Cliente - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" closeOnEscape="true" modal="true"
+			position="270,70" width="900px" height="400px"
+			onHide="PF('wiz').loadStep('geral', false)">
+			<h:form id="formCadastro">
+				<p:wizard flowListener="#{clienteBean.onFlowProcess}"
+					widgetVar="wiz">
+					<p:tab id="geral" title="Geral">
+						<p:panel>
+							<h:panelGrid id="painel_geral" columns="4" cellpadding="10px">
+								<p:outputLabel for="razao" value="Razão Social" />
+								<p:inputText id="razao" size="25" maxlength="100"
+									value="#{clienteBean.cliente.razaoSocial}" required="true" />
+								<p:outputLabel value="Nome Fantasia" />
+								<p:inputText size="25" maxlength="70"
+									value="#{clienteBean.cliente.nomeFantasia}" />
+
+								<p:outputLabel for="fisjur" value="Pessoa J/F" />
+								<p:selectOneRadio id="fisjur"
+									value="#{clienteBean.cliente.fisjur}" required="true">
+									<f:selectItem itemValue="J" itemLabel="Jurídica" />
+									<f:selectItem itemValue="F" itemLabel="Física" />
+								</p:selectOneRadio>
+
+								<p:outputLabel for="cnpjcpf" value="  CNPJ/CPF" />
+								<p:inputText id="cnpjcpf" size="25" maxlength="14"
+									value="#{clienteBean.cliente.cnpjcpf}" required="true" />
+
+								<p:outputLabel value="Inscrição Estadual" />
+								<p:inputText size="25" maxlength="20"
+									value="#{clienteBean.cliente.inscestadual}" />
+
+								<p:outputLabel value="Inscrição Municipal" />
+								<p:inputText size="25" maxlength="20"
+									value="#{clienteBean.cliente.inscmunicipal}" />
+
+								<p:outputLabel for="telefone" value="Telefone" />
+								<p:inputMask id="telefone" mask="(99)9999-9999" size="25"
+									value="#{clienteBean.cliente.fone1}" required="true" />
+									
+								<p:outputLabel value="Telefone" />
+								<p:inputMask mask="(99)9999-9999" size="25"
+									value="#{clienteBean.cliente.fone2}" />
+
+								<p:outputLabel for="contato" value="Contato" />
+								<p:inputText id="contato" size="25" maxlength="30"
+									value="#{clienteBean.cliente.contato}" required="true" />
+									
+								<p:outputLabel for="email" value="E-mail" />
+								<p:inputText id="email" size="25" maxlength="60"
+									value="#{clienteBean.cliente.email}" required="true" />
+								<p:outputLabel value="Usuário" />
+								<p:selectOneMenu filter="true"
+									value="#{clienteBean.cliente.usuarioID}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItem noSelectionOption="true"
+										itemLabel="Selecione um usuário" />
+									<f:selectItems value="#{clienteBean.usuarios}" var="usuario"
+										itemValue="#{usuario}" itemLabel="#{usuario.nickname}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Ativo" rendered="#{clienteBean.ativo}" />
+								<p:selectBooleanCheckbox value="#{clienteBean.cliente.ativo}"
+									rendered="#{clienteBean.ativo}" />
+
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+					<p:tab id="endereco" title="Endereço">
+						<p:panel>
+							<h:panelGrid id="painel_end" columns="4" cellpadding="10px">
+								<p:outputLabel for="cep" value="CEP" />
+								<p:inputMask id="cep" mask="99999-999" size="10"
+									value="#{clienteBean.cliente.cep}" required="true" />
+
+								<p:outputLabel for="logradouro" value="Logradouro" />
+								<p:inputText id="logradouro" size="25" maxlength="80"
+									value="#{clienteBean.cliente.logradouro}" required="true" />
+
+								<p:outputLabel for="numero" value="Número" />
+								<p:inputText id="numero" size="15" maxlength="5"
+									value="#{clienteBean.cliente.numero}" required="true" />
+
+								<p:outputLabel value="Complemento" />
+								<p:inputText size="10" maxlength="30"
+									value="#{clienteBean.cliente.complemento}" />
+
+								<p:outputLabel for="bairro" value="Bairro" />
+								<p:inputText id="bairro" size="25" maxlength="50"
+									value="#{clienteBean.cliente.bairro}" required="true" />
+
+								<p:outputLabel for="uf" value="UF" />
+								<p:selectOneMenu id="uf" filter="true"
+									value="#{clienteBean.cliente.estadoID}"
+									converter="omnifaces.SelectItemsConverter"
+									onchange="#{clienteBean.popular()}">
+									<f:selectItem noSelectionOption="true" itemLabel="UF" />
+									<f:selectItems value="#{clienteBean.estados}" var="estado"
+										itemValue="#{estado}" itemLabel="#{estado.uf}" />
+									<p:ajax listener="#{clienteBean.popular}"
+										update=":formCadastro:cidade" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="cidade" value="Cidade" />
+								<p:selectOneMenu id="cidade" filter="true"
+									value="#{clienteBean.cliente.cidadeID}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItem noSelectionOption="true"
+										itemLabel="Selecione uma cidade" />
+									<f:selectItems value="#{clienteBean.cidades}" var="cidade"
+										itemValue="#{cidade}" itemLabel="#{cidade.cidade}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+					<p:tab id="financeiro" title="Financeiro">
+						<p:panel>
+							<h:panelGrid id="painel_fin" columns="4" cellpadding="10px">
+								<p:outputLabel value="E-mail NFE" />
+								<p:inputText size="25" maxlength="60"
+									value="#{clienteBean.cliente.emailNFE}" />
+
+								<p:outputLabel value="E-mail Demonstrativo" />
+								<p:inputText size="25" maxlength="60"
+									value="#{clienteBean.cliente.emailDemo}" />
+
+								<p:outputLabel for="tipo" value="Requer Nota" />
+								<p:selectOneRadio id="tipo" value="#{clienteBean.cliente.nota}"
+									required="true">
+									<f:selectItem itemValue="true" itemLabel="Sim" />
+									<f:selectItem itemValue="false" itemLabel="Não" />
+								</p:selectOneRadio>
+
+								<p:outputLabel for="boleto" value="Requer Boleto" />
+								<p:selectOneRadio id="boleto"
+									value="#{clienteBean.cliente.boleto}" required="true">
+									<f:selectItem itemValue="true" itemLabel="Sim" />
+									<f:selectItem itemValue="false" itemLabel="Não" />
+								</p:selectOneRadio>
+
+								<p:outputLabel for="enviaDemo" value="Envia Demonstrativo" />
+								<p:selectOneRadio id="enviaDemo"
+									value="#{clienteBean.cliente.enviaDemo}" required="true">
+									<f:selectItem itemValue="true" itemLabel="Sim" />
+									<f:selectItem itemValue="false" itemLabel="Não" />
+								</p:selectOneRadio>
+
+								<p:outputLabel for="aprovaDemo" value="Aprova Demonstrativo" />
+								<p:selectOneRadio id="aprovaDemo"
+									value="#{clienteBean.cliente.aprovaDemo}" required="true">
+									<f:selectItem itemValue="true" itemLabel="Sim" />
+									<f:selectItem itemValue="false" itemLabel="Não" />
+								</p:selectOneRadio>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellspacing="8px">
+								<p:outputLabel for="condFatura" value="Condição de Fatura" />
+								<p:selectOneRadio id="condFatura"
+									value="#{clienteBean.cliente.condFatura}" required="true">
+									<f:selectItem itemValue="S" itemLabel="Sempre que possível" />
+									<f:selectItem itemValue="I" itemLabel="Intervalo X dias" />
+									<f:selectItem itemValue="T" itemLabel="Todo dia X" />
+									<f:selectItem itemValue="V" itemLabel="Valor maior que X" />
+								</p:selectOneRadio>
+							</h:panelGrid>
+
+							<h:panelGrid columns="4" cellspacing="8px">
+								<p:outputLabel value="Número p/ Condição (X)" />
+								<p:inputText size="10" maxlength="3"
+									value="#{clienteBean.cliente.numCond}" />
+
+								<p:outputLabel for="condpgto" value="Condição de Pgto" />
+								<p:selectOneMenu id="condpgto" filter="true"
+									value="#{clienteBean.cliente.condicaoPgtoID}"
+									converter="omnifaces.SelectItemsConverter" required="true">
+									<f:selectItem noSelectionOption="true"
+										itemLabel="Seleciona uma condição" />
+									<f:selectItems value="#{clienteBean.condicoes}" var="condicao"
+										itemValue="#{condicao}" itemLabel="#{condicao.descricaoPgto}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</p:panel>
+						<p:commandButton value="Salvar"
+							actionListener="#{clienteBean.salvar}"
+							style="float: right;padding-top:5px"
+							update=":mensagem :formListagem:tabela"
+							oncomplete="PF('dialogo').hide();" />
+					</p:tab>
+				</p:wizard>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

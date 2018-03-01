@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/layout.xhtml">
+
+	<ui:define name="conteudo">
+		<h:form id="formODS">
+			<p:growl id="mensagem" showDetail="true" />
+			<p:dataTable id="tabela" emptyMessage="Não há nada para ser impresso." styleClass="geral"
+				value="#{impressaoBean.listaODS}" var="ods" rowKey="#{ods.codigo}" rowExpandMode="single" 
+				paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" widgetVar="impressao">
+
+				<p:ajax event="rowToggle" listener="#{impressaoBean.onRowToggle}"/>
+
+				<f:facet name="header">
+					<p:outputLabel value="Impressão" styleClass="tituloTabela" />
+					<p:commandButton value="Confirmar" actionListener="#{impressaoBean.confirmar}" 
+									 update=":mensagem :formODS:tabela" action="#{impressaoBean.action()}">
+					</p:commandButton>
+				</f:facet>
+				
+				<p:column width="0">
+					<p:rowToggler/>
+				</p:column>
+				
+				<p:column headerText="OS Nº" width="5%" style="text-align:center">
+					<h:outputText value="#{ods.codigo}" />
+				</p:column>
+
+				<p:column headerText="Cliente" width="25%" style="text-align:left">
+					<h:outputText value="#{ods.clienteID.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="Produto" width="20%" style="text-align:left">
+					<h:outputText value="#{ods.produto}" />
+				</p:column>
+
+				<p:column headerText="Qtde" width="10%" style="text-align:right">
+					<h:outputText value="#{ods.quantidadeFormatada}" />
+				</p:column>	
+				
+				<p:column headerText="Impresso" width="15%" style="text-align:center">
+					<h:outputText value="#{ods.impressoFormatado}" />
+				</p:column>					
+
+				<p:column headerText="Observações" width="25%" style="text-align:left">
+					<h:outputText value="#{ods.observacao}" />
+				</p:column>
+
+				<p:rowExpansion>
+					<p:dataTable id="expanded" value="#{impressaoBean.listaItens}" var="item" styleClass="expandedOthers">
+
+						<p:column style="text-align:left;width: 25%">
+							<h:outputText value="#{item.itemFormatado}" />
+						</p:column>
+						
+						<p:column width="15%" style="text-align:left;width: 20%">
+							<h:outputText value="#{item.relacaoID.mascara}" />
+						</p:column>
+						
+						<p:column width="5%" style="text-align:right;width: 10%">
+							<h:outputText value="#{item.quantidadeFormatada}" />
+						</p:column>
+
+						<p:column width="10%" style="text-align:center;width: 15%">
+							<p:selectBooleanButton onLabel="Sim" offLabel="Não" value="#{item.impresso}" 
+												   style="font-size: 70%" disabled="#{item.impresso}">
+								<f:attribute name="itemSelecionado" value="#{item}" />
+								<p:ajax listener="#{impressaoBean.check}"/>
+							</p:selectBooleanButton>
+						</p:column>
+						<f:facet name="footer"></f:facet>
+					</p:dataTable>				
+				</p:rowExpansion>
+			</p:dataTable>						
+		</h:form>
+		
+		<script type="text/javascript">
+        		$(document).ready(function() {
+                rowExpansion(PF('impressao'));
+             });
+
+	         function rowExpansion(dataTable) {
+ 	               var $this = dataTable;
+ 	               $this.tbody.children('tr').css('cursor', 'pointer')
+ 	               $this.tbody.off('dblclick.datatable-expansion', '> tr')
+ 	                  .on('dblclick.datatable-expansion', '> tr', null, function() {
+ 	                     $this.collapseAllRows();
+ 	                     $this.toggleExpansion($(this).find('div.ui-row-toggler'));
+ 	                   });
+ 	        }
+       	</script>	
+       			
+	</ui:define>
+</ui:composition>

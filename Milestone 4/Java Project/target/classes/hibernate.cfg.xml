@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+
+		<!-- Configuring the connection to MySQL DataBase-->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost/ense470</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">q1w2e3r4</property>
+
+		<property name="connection.pool_size">3</property>
+
+		<!-- Session Context Management -->
+		<property name="current_session_context_class">thread</property>
+
+		<!-- Second Level Cache -->
+		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+		<!-- Shows Generated SQLs -->
+		<property name="show_sql">true</property>
+
+		<!-- Action type performed by Hibernate -->
+		<property name="hbm2ddl.auto">validate</property>
+
+		<!-- Mapping Entities -->
+		<mapping class="ca.hellsystem.domain.Request" />
+		<mapping class="ca.hellsystem.domain.Software" />
+		<mapping class="ca.hellsystem.domain.SoftwareApprover" />
+		<mapping class="ca.hellsystem.domain.User" />
+	</session-factory>
+
+</hibernate-configuration>
