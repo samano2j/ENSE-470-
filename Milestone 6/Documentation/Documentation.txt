@@ -1,0 +1,22 @@
+Let's go throught the main folders/files that we have in the project.
+
+1) src/main/java
+
+1.1) Bean Layer
+Backend to system. For each page that we have in our application we create a bean class to manage it, and hold users information.
+
+1.2) DAO
+Classes that access the database, we have a generic DAO with somo generic functions commum to all classes.
+If we need something specific for a class, we extends from generic domain and implements the search that is required
+
+1.3) Domain
+Classes that we want to map into the database. We created a generic domain that contains a ID auto generated.
+We extend it to each class and add the particular stuff.
+
+1.4) Util - General utilities that we need in our system.
+
+2) src/main/resource/Hibernate.cfg.xml - Configurates the database connection
+
+3) scr/test/java - Hibernate testing
+
+4) scr/main/webapp/pages - Contains the xhtml files from each page of the system

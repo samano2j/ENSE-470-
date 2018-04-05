@@ -1,0 +1,48 @@
+Importing the project:
+
+1) Pull the project from https://github.com/chan200v/ense470_webapp
+
+2) Import the project to eclipse
+
+If you want the project to work on your localhost you'll need to do a little bit more:
+
+1) Go to Eclipse Market Place, download and install "JBoss Tool"
+After that, press Alt + F5, mark "Force update of snapshot/releases" check box, then click Ok
+The project should have no erros or warnings at this moment, if it does maybe its missing some jar
+
+2) Set up data base
+2.1) You need to have MySQL server installed on your computer.
+If you dont have it, you can download from here: https://dev.mysql.com/downloads/mysql/
+
+2.2) I also recommend to install MySQL Workbench, I'm pretty sure it comes if the MySQL server
+If it doesn't you can download Workbench from here: https://www.mysql.com/products/workbench/
+Since you have it installed open it, go to your local server (You should've configurated it during the MySQL server instalation)
+And create a schema called ense470
+
+2.3) Go to eclipse scr/main/resources/hibernate.cfg.xml
+
+In the configuration section you need to put your useraname and password from sql server
+<!-- Configuring the connection to MySQL DataBase-->
+<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+<property name="connection.url">jdbc:mysql://localhost/ense470</property>
+<property name="connection.username">your mysql server user</property>
+<property name="connection.password">your mysql server password</property>
+
+In action to be performed changed "validate" to "create"
+<!-- Action type performed by Hibernate -->
+<property name="hbm2ddl.auto">validate</property>
+
+2.4) Go to scr/teste/java/...util/HibernateTestUtil.java
+Comment the "ignore" annotation and press Alt+ Shift + X then T (Run as Junit test)
+If test succeed, it'll create all the tables in the database
+Uncomment "Ignore" annotation
+
+2.5) Go back to scr/main/resources/hibernate.cfg.xml
+In action to be performed changed "create" to "validate"
+<!-- Action type performed by Hibernate -->
+<property name="hbm2ddl.auto">create</property>
+
+2.6) Now your database is created, but there is no data inside, so copy everthing from inserts.txt file in workbench and run it.
+
+2.7) Now it should be working, go to src/main/webapp/pages right click any of then and Run -> Run on Server and application should start
+
