@@ -1,4 +1,4 @@
-Let's go throught the main folders/files that we have in the project.
+Let's go through the main folders/files that we have in the project.
 
 1) src/main/java
 
